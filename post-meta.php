@@ -36,7 +36,6 @@ function markonikolas_post_meta_block_init() {
 		'show_in_rest' => true,
 	] );
 
-
 	// register dummy post meta
 	register_post_meta( 'post', '_post_stats_views', [
 		'type' => 'number',
