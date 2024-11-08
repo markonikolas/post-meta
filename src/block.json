@@ -7,14 +7,25 @@
 	"category": "text",
 	"icon": "smiley",
 	"description": "Post meta block that displays artist profile information.",
-	"example": {},
-	"supports": {
-		"html": false
+	"example": {
+		"attributes": {
+			"selectedMeta": "_post_stats_likes"
+		}
 	},
+	"supports": {
+		"html": false,
+		"multiple": true
+	},
+	"attributes": {
+		"selectedMeta": {
+			"type": "string",
+			"default": "_post_stats_likes"
+		}
+	},
+	"usesContext": ["postId", "postType"],
 	"textdomain": "post-meta",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css",
-	"render": "file:./render.php",
-	"viewScript": "file:./view.js"
+	"render": "file:./render.php"
 }

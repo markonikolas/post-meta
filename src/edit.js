@@ -1,38 +1,45 @@
-/**
- * Retrieves the translation of text.
- *
- * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-i18n/
- */
-import { __ } from '@wordpress/i18n';
+import {InspectorControls, useBlockProps} from '@wordpress/block-editor';
+import { useEntityProp } from '@wordpress/core-data';
 
-/**
- * React hook that is used to mark the block wrapper element.
- * It provides all the necessary props like the class name.
- *
- * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
- */
-import { useBlockProps } from '@wordpress/block-editor';
-
-/**
- * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
- * Those files can contain any CSS code that gets applied to the editor.
- *
- * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
- */
 import './editor.scss';
+import {PanelBody, SelectControl} from "@wordpress/components";
+import {useEffect, useState} from "@wordpress/element";
 
-/**
- * The edit function describes the structure of your block in the context of the
- * editor. This represents what the editor will render when the block is used.
- *
- * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#edit
- *
- * @return {Element} Element to render.
- */
-export default function Edit() {
+export default function Edit({ attributes, setAttributes, context: { postType, postId }}) {
+	const { selectedMeta } = attributes;
+
+	const [ meta ] = useEntityProp(
+		'postType',
+		postType,
+		'meta',
+		postId
+	);
+
+	const options = Object.keys(meta)
+		.filter((opt) => /_post_stats_[a-z]+/.test(opt))
+		.reduce((acc,current) => {
+			const arr = current.split('_');
+			const name = arr[arr.length - 1];
+			const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
+
+			return [ ...acc, { label: capitalized, value: current } ]
+		}, []);
+
 	return (
-		<p { ...useBlockProps() }>
-			{ __( 'Post Meta – hello from the editor!', 'post-meta' ) }
-		</p>
+		<div { ...useBlockProps() }>
+			<InspectorControls>
+				<PanelBody title="Post Meta Settings">
+					<SelectControl
+						label="Meta Key"
+						value={ selectedMeta }
+						options={ options }
+						onChange={ ( selectedMeta ) => setAttributes( { selectedMeta } ) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{meta[selectedMeta]}
+		</div>
 	);
 }
